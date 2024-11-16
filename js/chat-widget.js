@@ -73,13 +73,17 @@ function createChatWidget({
     document.body.appendChild(chatFrame);
     document.body.appendChild(chatButton);
 
-    chatButton.addEventListener('click', () => {
-        const context = getContext();
-        if (context) {
-            const url = new URL(chatUrl);
-            url.searchParams.set('context', context);
+    let isInitialized = false;
 
-            iframe.src = url.toString();
+    chatButton.addEventListener('click', () => {
+        if (!isInitialized) {
+            const context = getContext();
+            if (context) {
+                const url = new URL(chatUrl);
+                url.searchParams.set('context', context);
+                iframe.src = url.toString();
+            }
+            isInitialized = true;
         }
 
         chatFrame.style.display = chatFrame.style.display === 'none' ? 'flex' : 'none';
