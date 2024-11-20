@@ -17,7 +17,7 @@ function createChatWidget({
     const chatFrame = document.createElement('div');
     chatFrame.id = 'chat-frame';
     chatFrame.style.position = 'fixed';
-    chatFrame.style.bottom = '6rem';
+    chatFrame.style.bottom = `calc(${buttonSize} + 1.5rem)`;
     chatFrame.style.right = '1rem';
     chatFrame.style.zIndex = '999';
     chatFrame.style.display = 'none';
