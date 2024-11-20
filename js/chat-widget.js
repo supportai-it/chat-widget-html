@@ -5,6 +5,15 @@ function createChatWidget({
     buttonSize = '64px',
     getContext = () => "",
 } = {}) {
+    const updateContext = () => {
+        const context = getContext();
+        if (context) {
+            const url = new URL(chatUrl);
+            url.searchParams.set('context', context);
+            iframe.src = url.toString();
+        }
+    }
+
     const chatFrame = document.createElement('div');
     chatFrame.id = 'chat-frame';
     chatFrame.style.position = 'fixed';
@@ -12,17 +21,15 @@ function createChatWidget({
     chatFrame.style.right = '1rem';
     chatFrame.style.zIndex = '999';
     chatFrame.style.display = 'none';
-    chatFrame.style.width = '100%';
-    chatFrame.style.height = '100%';
-    // chatFrame.style.display = 'flex';
     chatFrame.style.justifyContent = 'flex-end';
     chatFrame.style.alignItems = 'flex-end';
 
     const iframe = document.createElement('iframe');
     iframe.src = chatUrl;
-    iframe.style.width = '90%';
+    iframe.style.position = 'absolute';
+    iframe.style.width = '90vw';
     iframe.style.maxWidth = '400px';
-    iframe.style.height = '80%';
+    iframe.style.height = '80vh';
     iframe.style.maxHeight = '600px';
     iframe.style.border = 'none';
     iframe.style.overflow = 'hidden';
@@ -73,19 +80,13 @@ function createChatWidget({
     document.body.appendChild(chatFrame);
     document.body.appendChild(chatButton);
 
-    let isInitialized = false;
+    updateContext();
+
+    window.addEventListener('chat-widget/updateContext', () => {
+        updateContext();
+    });
 
     chatButton.addEventListener('click', () => {
-        if (!isInitialized) {
-            const context = getContext();
-            if (context) {
-                const url = new URL(chatUrl);
-                url.searchParams.set('context', context);
-                iframe.src = url.toString();
-            }
-            isInitialized = true;
-        }
-
         chatFrame.style.display = chatFrame.style.display === 'none' ? 'flex' : 'none';
     });
 }
