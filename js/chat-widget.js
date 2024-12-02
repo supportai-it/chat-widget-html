@@ -12,80 +12,91 @@ function createChatWidget({
             url.searchParams.set('context', context);
             iframe.src = url.toString();
         }
-    }
+    };
 
     const chatFrame = document.createElement('div');
-    chatFrame.id = 'chat-frame';
-    chatFrame.style.position = 'fixed';
-    chatFrame.style.bottom = `calc(${buttonSize} + 1.5rem)`;
-    chatFrame.style.right = '1rem';
-    chatFrame.style.zIndex = '999';
-    chatFrame.style.display = 'none';
-    chatFrame.style.justifyContent = 'flex-end';
-    chatFrame.style.alignItems = 'flex-end';
-
     const iframe = document.createElement('iframe');
-    iframe.src = chatUrl;
-    iframe.style.position = 'absolute';
-    iframe.style.width = '90vw';
-    iframe.style.maxWidth = '400px';
-    iframe.style.height = '80vh';
-    iframe.style.maxHeight = '600px';
-    iframe.style.border = 'none';
-    iframe.style.overflow = 'hidden';
-    iframe.style.transformOrigin = 'bottom right';
-    chatFrame.appendChild(iframe);
-
     const chatButton = document.createElement('div');
-    chatButton.id = 'chat-btn';
-    chatButton.style.position = 'fixed';
-    chatButton.style.bottom = '1rem';
-    chatButton.style.right = '1rem';
-    chatButton.style.zIndex = '9999';
-    chatButton.style.cursor = 'pointer';
-
     const buttonContent = document.createElement('div');
-    buttonContent.style.background = buttonColor;
-    buttonContent.style.color = '#fff';
-    buttonContent.style.width = buttonSize;
-    buttonContent.style.height = buttonSize;
-    buttonContent.style.borderRadius = '50%';
-    buttonContent.style.display = 'flex';
-    buttonContent.style.alignItems = 'center';
-    buttonContent.style.justifyContent = 'center';
-    buttonContent.style.transition = 'transform 0.15s ease, background 0.15s ease';
 
-    buttonContent.addEventListener('mouseenter', () => {
-        buttonContent.style.transform = 'scale(1.05)';
-        buttonContent.style.background = buttonHoverColor;
-    });
-    buttonContent.addEventListener('mouseleave', () => {
-        buttonContent.style.transform = 'scale(1)';
-        buttonContent.style.background = buttonColor;
-    });
-
-    const svgIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svgIcon.setAttribute('viewBox', '0 0 24 24');
-    svgIcon.setAttribute('width', '32');
-    svgIcon.setAttribute('height', '32');
-
-    const svgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    svgPath.setAttribute('fill', 'currentColor');
-    svgPath.setAttribute('d', 'M12 3c5.5 0 10 3.58 10 8s-4.5 8-10 8c-1.24 0-2.43-.18-3.53-.5C5.55 21 2 21 2 21c2.33-2.33 2.7-3.9 2.75-4.5C3.05 15.07 2 13.13 2 11c0-4.42 4.5-8 10-8');
-    svgIcon.appendChild(svgPath);
-    buttonContent.appendChild(svgIcon);
+    // Set IDs and attributes
+    chatFrame.id = 'chat-frame';
+    chatFrame.style.display = 'none';
+    iframe.src = chatUrl;
+    chatButton.id = 'chat-btn';
+    buttonContent.innerHTML = `
+        <svg viewBox="0 0 24 24" width="32" height="32">
+            <path fill="currentColor" d="M12 3c5.5 0 10 3.58 10 8s-4.5 8-10 8c-1.24 0-2.43-.18-3.53-.5C5.55 21 2 21 2 21c2.33-2.33 2.7-3.9 2.75-4.5C3.05 15.07 2 13.13 2 11c0-4.42 4.5-8 10-8"/>
+        </svg>
+    `;
 
     chatButton.appendChild(buttonContent);
+    chatFrame.appendChild(iframe);
 
+    // Add styles for layout and interactions
+    const style = document.createElement('style');
+    style.textContent = `
+        #chat-frame {
+            position: fixed;
+            bottom: calc(${buttonSize} + 1.5rem);
+            right: 1rem;
+            z-index: 999;
+            display: none;
+            justify-content: flex-end;
+            align-items: flex-end;
+        }
+
+        #chat-frame iframe {
+            position: absolute;
+            width: 90vw;
+            max-width: 400px;
+            height: 80vh;
+            max-height: 600px;
+            border: none;
+            overflow: hidden;
+            transform-origin: bottom right;
+        }
+
+        #chat-btn {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            z-index: 9999;
+            cursor: pointer;
+        }
+
+        #chat-btn div {
+            background: ${buttonColor};
+            color: #fff;
+            width: ${buttonSize};
+            height: ${buttonSize};
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.15s ease, background 0.15s ease;
+        }
+
+        #chat-btn div:hover {
+            transform: scale(1.05);
+            background: ${buttonHoverColor};
+        }
+
+        #chat-btn svg {
+            fill: currentColor;
+        }
+    `;
+
+    document.body.appendChild(style);
     document.body.appendChild(chatFrame);
     document.body.appendChild(chatButton);
 
     updateContext();
 
-    window.addEventListener('chat-widget/updateContext', () => {
-        updateContext();
-    });
+    // Update the context when triggered
+    window.addEventListener('chat-widget/updateContext', updateContext);
 
+    // Toggle the chat frame visibility when button is clicked
     chatButton.addEventListener('click', () => {
         chatFrame.style.display = chatFrame.style.display === 'none' ? 'flex' : 'none';
     });
